@@ -34,9 +34,37 @@ def handle_hello():
         "hello": "world",
         "family": members
     }
-
-
     return jsonify(response_body), 200
+
+@app.route('/member/<int:member_id>', methods=['GET'])
+def get_member(member_id):
+    member = jackson_family.get_member(member_id)
+    if member is None:
+        return jsonify({'message': "Member not found"}), 404
+    return jsonify(member.serialize()), 200
+
+@app.route('/member', methods=['POST'])
+def add_member():
+    body = request.json
+    first_name = body.get('first_name', None)
+    age = body.get('age', None)
+    lucky_numbers = body.get('lucky_numbers', None)
+
+    if first_name is None or age is None or lucky_numbers is None:
+        return jsonify({'message': "Form incomplete."}), 400
+    
+    new_member = Person(first_name=first_name, age=age, lucky_numbers=lucky_numbers)
+    jackson_family.add_member(new_member)
+    return jsonify({'message': "Member added."}), 200
+
+@app.route('/member/<int:member_id>', methods=['DELETE'])
+def delete_member(member_id):
+    member = jackson_family.get_member(member_id)
+    if member is None:
+        return jsonify({'message': "Member not found."}), 404
+    jackson_family.delete_member(member_id)
+    return jsonify({'done': "Member deleted"}), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
