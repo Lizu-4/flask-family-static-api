@@ -40,15 +40,19 @@ class FamilyStructure:
 
     def add_member(self, member):
         # fill this method and update the return
-        member["last_name"] = self.last_name
-        member["id"] = self._generateId()
-        self._members.append(member)
+        if "last_name" not in member:
+            member["last_name"] = self.last_name
+        if "id" not in member:
+            member["id"] = self._generateId()
+
+        return self._members.append(member)
 
     def delete_member(self, id):
         # fill this method and update the return
         for member in self._members:
             if member["id"] == id:
                 self._members.remove(member)
+
 
     def get_member(self, id):
         # fill this method and update the return
